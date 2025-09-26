@@ -2,18 +2,26 @@ from fastapi import FastAPI
 import uvicorn
 # from copilotkit
 from copilotkit.integrations.fastapi import add_fastapi_endpoint
-from copilotkit import CopilotKitRemoteEndpoint, LangGraphAgent
+from copilotkit import CopilotKitRemoteEndpoint
+from copilotkit.crewai.crewai_agent import CrewAIAgent
 import os
 app = FastAPI()
 from shopping_assistant import graph
+from shopping import ShoppingAgentFlow
+from shopping import AgentState
 
 
 sdk = CopilotKitRemoteEndpoint(
     agents=[
-        LangGraphAgent(
-            name="shopping_agent",
+        # LangGraphAgent(
+        #     name="shopping_agent",
+        #     description="A shopping agent that can help you find the best products for your needs by searching various retailers",
+        #     graph=graph
+        # ),
+        CrewAIAgent(
+            name="shopping_agent_crewai",
             description="A shopping agent that can help you find the best products for your needs by searching various retailers",
-            graph=graph
+            flow= ShoppingAgentFlow()
         )
     ]
 )

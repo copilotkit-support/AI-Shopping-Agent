@@ -27,7 +27,7 @@ html {
         `}</style>
       </head>
       <body>
-        <CopilotKit runtimeUrl='/api/copilotkit' showDevConsole={false} agent='shopping_agent'>
+        <CopilotKit runtimeUrl='/api/copilotkit' showDevConsole={false} agent='shopping_agent_crewai'>
           {children}
         </CopilotKit>
       </body>

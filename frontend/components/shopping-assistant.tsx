@@ -175,7 +175,7 @@ export function ShoppingAssistant() {
   }])
   // const [products, setProducts] = useState<any>(mockProducts)
   const { state, setState, start, run } = useCoAgent({
-    name: "shopping_agent",
+    name: "shopping_agent_crewai",
     initialState: conversationHistory.length > 0 ? { ...conversationHistory[0]?.state, show_results: (conversationHistory[0]?.state?.products?.length > 0 ? true : false) } : {
       products: [],
       favorites: typeof window !== 'undefined' && window.localStorage.getItem("wishlist") ? JSON.parse(window.localStorage.getItem("wishlist") || "[]") : [],
@@ -426,7 +426,7 @@ export function ShoppingAssistant() {
   const wishlistProducts = state?.products?.filter((product: any) => state?.favorites?.includes(product.id))
 
   useCoAgentStateRender({
-    name: "shopping_agent",
+    name: "shopping_agent_crewai",
     render: (state1: any) => {
       // useEffect(() => {
       // console.log(state1, "state1")
