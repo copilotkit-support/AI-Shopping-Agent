@@ -17,6 +17,8 @@ import random
 from datetime import datetime
 from urllib.parse import unquote, urlparse, urljoin
 import uuid
+from dotenv import load_dotenv
+load_dotenv()
 
 class AgentState(CopilotKitState):
     """
@@ -107,14 +109,12 @@ class ShoppingAgentFlow(Flow[AgentState]):
                     self.state.logs = []
                     await copilotkit_emit_state(self.state)
                     return self.state
-                response = completion(
-                    model="gpt-5-mini-2025-08-07",
-                    messages=[
-                        {"role": "system", "content": SYSTEM_MSG1},
-                        {"role": "user", "content": json.dumps(self.state.products)}
-                    ]
-                )
-                self.state.messages.append(response.choices[0].message)
+                
+                self.state.messages.append({
+                    "role" : "assistant",
+                    "content" : self.state.messages[-1]['content'],
+                    "id" : self.state.messages[-2]['tool_calls'][0]['id']
+                })
                 self.state.logs = []
                 if len(self.state.products) > 0:
                     self.state.show_results = True
@@ -151,13 +151,21 @@ class ShoppingAgentFlow(Flow[AgentState]):
             )
                 
             
-            if hasattr(response0.choices[0].message, "tool_calls") and response0.choices[0].message.tool_calls and response0.choices[0].message.content == '':        
+            if hasattr(response0.choices[0].message, "tool_calls") and response0.choices[0].message.tool_calls and response0.choices[0].message.content == None:        
                 self.state.logs = []
                 await copilotkit_emit_state(self.state)
                 self.state.messages.append({
                     "role" : "assistant",
                     "content" : "",
-                    "tool_calls" : response0.tool_calls
+                    "tool_calls" : [
+                        {
+                            "id" : str(uuid.uuid4()),
+                            "function" : {
+                                "name" : response0.choices[0].message.tool_calls[0].function.name,
+                                "arguments" : response0.choices[0].message.tool_calls[0].function.arguments
+                            }
+                        }
+                    ]
                 })
                 return self.state
                 

@@ -487,6 +487,7 @@ export function ShoppingAssistant() {
           favorites: [...state?.favorites, ...state?.products?.filter((product: any) => args?.move_to_wishlist?.map((product: any) => product?.product_id)?.includes(product?.id))]
         })
         window.localStorage.setItem("wishlist", JSON.stringify([...state?.favorites, ...state?.products?.filter((product: any) => args?.move_to_wishlist?.map((product: any) => product?.product_id)?.includes(product?.id))]))
+        return "Product Moved to wishlist successfully"
       }
       if (args?.remove_from_wishlist?.length > 0) {
         let itemsToRemove = args?.remove_from_wishlist?.map((product: any) => product?.product_id)
@@ -495,6 +496,7 @@ export function ShoppingAssistant() {
           favorites: state?.favorites?.filter((product: any) => !itemsToRemove?.includes(product?.id))
         })
         window.localStorage.setItem("wishlist", JSON.stringify(state?.favorites?.filter((product: any) => !itemsToRemove?.includes(product?.id))))
+        return "Product Removed from wishlist successfully"
       }
       if (args?.remove_from_canvas?.length > 0) {
         debugger
@@ -512,9 +514,8 @@ export function ShoppingAssistant() {
             products: state?.products?.filter((p: any) => !itemsToRemove?.includes(p?.id))
           })
         }
-
+        return "Product Removed from canvas successfully"
       }
-      return "Product edited successfully"
     }
   })
 
