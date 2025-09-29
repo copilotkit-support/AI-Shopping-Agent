@@ -30,7 +30,7 @@ class AgentState(CopilotKitState):
     buffer_products: List = []
     wishlist: List = []
     logs: List = []
-    report: str | None = None
+    report: Any | None = None
     show_results: bool = False
     canvas_logs : dict = { "title" : "", "subtitle" : "" }
 
@@ -54,7 +54,8 @@ class ShoppingAgentFlow(Flow[AgentState]):
                 result =await generate_report(self.state.products)
                 print(result, "result")
                 self.state.report = json.loads(result)
-                return self.state
+                await copilotkit_emit_state(self.state)
+                return
                 
             self.state.logs.append({
                 "message" : "Analyzing user query",
