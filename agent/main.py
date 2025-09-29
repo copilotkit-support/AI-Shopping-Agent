@@ -6,18 +6,11 @@ from copilotkit import CopilotKitRemoteEndpoint
 from copilotkit.crewai.crewai_agent import CrewAIAgent
 import os
 app = FastAPI()
-from shopping_assistant import graph
-from shopping import ShoppingAgentFlow
-from shopping import AgentState
+from shopping_assistant import ShoppingAgentFlow
 
 
 sdk = CopilotKitRemoteEndpoint(
     agents=[
-        # LangGraphAgent(
-        #     name="shopping_agent",
-        #     description="A shopping agent that can help you find the best products for your needs by searching various retailers",
-        #     graph=graph
-        # ),
         CrewAIAgent(
             name="shopping_agent_crewai",
             description="A shopping agent that can help you find the best products for your needs by searching various retailers",
