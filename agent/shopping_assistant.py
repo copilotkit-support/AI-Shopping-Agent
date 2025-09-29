@@ -108,6 +108,7 @@ class ShoppingAgentFlow(Flow[AgentState]):
                         "id" : self.state.messages[-2]['tool_calls'][0]['id']
                     })
                     self.state.logs = []
+                    self.state.show_results = True
                     await copilotkit_emit_state(self.state)
                     return self.state
                 

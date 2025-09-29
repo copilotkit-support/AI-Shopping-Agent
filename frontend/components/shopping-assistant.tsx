@@ -121,6 +121,7 @@ export function ShoppingAssistant() {
   const [query, setQuery] = useState("")
   const [isSearching, setIsSearching] = useState(false)
   const { setThreadId } = useCopilotContext()
+  const [isChatCreated, setIsChatCreated] = useState(false)
   const [conversationHistory, setConversationHistory] = useState<any>(typeof window !== 'undefined' && window.localStorage.getItem("conversationHistory") ? (() => {
     let stored = JSON.parse(window.localStorage.getItem("conversationHistory") || "[]");
     console.log(stored, "storedstoredstored");
@@ -191,25 +192,25 @@ export function ShoppingAssistant() {
     }
   })
   const { messages, setMessages } = useCopilotMessagesContext();
-  useEffect(() => {
-    // debugger
-    console.log(conversationHistory[0], "conversationHistory");
-    // console.log(JSON.parse(window.localStorage.getItem("conversationHistory") || "[]")[0]?.messages, "conversationHistory");
-    // setState(conversationHistory[0]?.state)
-    // setCurrentChatId(conversationHistory[0]?.conversationId)
-    // setMessages([new TextMessage({
-    //   role: Role.User,
-    //   content: "Hello, how are you?",
-    // })])
-    if ((conversationHistory[0]?.messages?.length > 0 && conversationHistory[conversationHistory.length - 1]?.messages?.length > 0)) {
-      console.log("Setting message here");
+  // useEffect(() => {
+  //   // debugger
+  //   console.log(conversationHistory[0], "conversationHistory");
+  //   // console.log(JSON.parse(window.localStorage.getItem("conversationHistory") || "[]")[0]?.messages, "conversationHistory");
+  //   // setState(conversationHistory[0]?.state)
+  //   // setCurrentChatId(conversationHistory[0]?.conversationId)
+  //   // setMessages([new TextMessage({
+  //   //   role: Role.User,
+  //   //   content: "Hello, how are you?",
+  //   // })])
+  //   if ((conversationHistory[0]?.messages?.length > 0 && conversationHistory[conversationHistory.length - 1]?.messages?.length > 0)) {
+  //     console.log("Setting message here");
 
-      setMessages(conversationHistory[0]?.messages)
-    }
+  //     setMessages(conversationHistory[0]?.messages)
+  //   }
 
 
-    // setMessages(JSON.parse(window.localStorage.getItem("conversationHistory") || "[]")[0]?.messages)
-  }, [conversationHistory])
+  //   // setMessages(JSON.parse(window.localStorage.getItem("conversationHistory") || "[]")[0]?.messages)
+  // }, [conversationHistory])
 
 
   useEffect(() => {
@@ -226,21 +227,34 @@ export function ShoppingAssistant() {
 
 
   useEffect(() => {
+    console.log(conversationHistory, "conversationHistory");
+    if ((conversationHistory[0]?.messages?.length > 0 && conversationHistory[conversationHistory.length - 1]?.messages?.length > 0)) {
+      console.log("Setting message here");
+
+      setMessages(conversationHistory[0]?.messages)
+    }
     if (typeof window === 'undefined') return;
 
     const handleBeforeUnload = () => {
+      if(window.localStorage.getItem("conversationHistory")=="[]"){
+        window.localStorage.setItem("conversationHistory", JSON.stringify(initialConvo))
+        return
+      } 
       window.localStorage.setItem("conversationHistory", JSON.stringify(conversationHistory));
       // window.localStorage.setItem("wishlist", JSON.stringify(state?.favorites));
     };
 
     // Runs when user closes tab or refreshes
     window.addEventListener("beforeunload", handleBeforeUnload);
-
+    if (isChatCreated) {
+      window.location.reload()
+    }
     // Cleanup
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [conversationHistory]);
+
 
 
 
@@ -275,8 +289,8 @@ export function ShoppingAssistant() {
         }
       }
     }
-
-    setConversationHistory((prev: any) => [newChat, ...prev])
+    setIsChatCreated(true)
+    setConversationHistory([newChat, ...conversationHistory])
     setCurrentChatId(newChatId)
 
     // Reset current state
@@ -335,7 +349,10 @@ export function ShoppingAssistant() {
         handleSwitchChat(remainingChats[0].conversationId)
       }
       else {
-        handleCreateNewChat("del")
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem("conversationHistory", JSON.stringify([]))
+          window.location.reload()
+        }
       }
     }
   }
@@ -542,7 +559,7 @@ export function ShoppingAssistant() {
             })
             let conversations = conversationHistory
             conversations.forEach((conversation: any) => {
-              if (conversation.conversationId === currentChatId) {
+              if (conversation.conversationId == currentChatId) {
                 conversation.chatName = args?.chat_name
               }
             })
