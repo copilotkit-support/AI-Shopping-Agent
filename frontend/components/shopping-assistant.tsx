@@ -122,6 +122,7 @@ export function ShoppingAssistant() {
   const [isSearching, setIsSearching] = useState(false)
   const { setThreadId } = useCopilotContext()
   const [isChatCreated, setIsChatCreated] = useState(false)
+  const { messages, setMessages } = useCopilotMessagesContext();
   const [conversationHistory, setConversationHistory] = useState<any>(typeof window !== 'undefined' && window.localStorage.getItem("conversationHistory") ? (() => {
     let stored = JSON.parse(window.localStorage.getItem("conversationHistory") || "[]");
     console.log(stored, "storedstoredstored");
@@ -162,7 +163,7 @@ export function ShoppingAssistant() {
       conversation.messages = fullMessages[index];
     });
     console.log("storedprocessed", stored);
-
+    setMessages(fullMessages[0])
     return stored;
   })() : initialConvo)
   const { visibleMessages, isLoading, reset } = useCopilotChat()
@@ -191,7 +192,6 @@ export function ShoppingAssistant() {
       }
     }
   })
-  const { messages, setMessages } = useCopilotMessagesContext();
   // useEffect(() => {
   //   // debugger
   //   console.log(conversationHistory[0], "conversationHistory");
@@ -215,6 +215,8 @@ export function ShoppingAssistant() {
 
   useEffect(() => {
     debugger
+    console.log("Inside useEffect for messages", messages);
+    
     let index = conversationHistory.findIndex((conversation: any) => conversation.conversationId === currentChatId)
     if (index != -1) {
       let modifiedConversation = conversationHistory
@@ -236,6 +238,7 @@ export function ShoppingAssistant() {
     if (typeof window === 'undefined') return;
 
     const handleBeforeUnload = () => {
+      debugger
       if(window.localStorage.getItem("conversationHistory")=="[]"){
         window.localStorage.setItem("conversationHistory", JSON.stringify(initialConvo))
         return
