@@ -163,7 +163,7 @@ export function ShoppingAssistant() {
       conversation.messages = fullMessages[index];
     });
     console.log("storedprocessed", stored);
-    setMessages(fullMessages[0])
+    // setMessages(fullMessages[0])
     return stored;
   })() : initialConvo)
   const { visibleMessages, isLoading, reset } = useCopilotChat()
