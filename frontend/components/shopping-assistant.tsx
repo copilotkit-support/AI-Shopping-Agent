@@ -220,9 +220,13 @@ export function ShoppingAssistant() {
     let index = conversationHistory.findIndex((conversation: any) => conversation.conversationId === currentChatId)
     if (index != -1) {
       let modifiedConversation = conversationHistory
-      modifiedConversation[index].messages = messages
+      if(messages.length != 0){
+        modifiedConversation[index].messages = messages
+      }
       modifiedConversation[index].state = state
       setConversationHistory(modifiedConversation)
+      if (typeof window === 'undefined') return;
+      window.localStorage.setItem("conversationHistory", JSON.stringify(modifiedConversation));
     }
 
   }, [messages, currentChatId])
@@ -238,7 +242,7 @@ export function ShoppingAssistant() {
     if (typeof window === 'undefined') return;
 
     const handleBeforeUnload = () => {
-      debugger
+      
       if(window.localStorage.getItem("conversationHistory")=="[]"){
         window.localStorage.setItem("conversationHistory", JSON.stringify(initialConvo))
         return
@@ -391,7 +395,7 @@ export function ShoppingAssistant() {
   const deleteProduct = (productId: string) => {
     const productToDelete = state?.products?.find((p: any) => p.id === productId)
     if (!productToDelete) return
-
+    setConversationHistory((prev: any) => prev.map((conversation: any) => conversation.conversationId === currentChatId ? { ...conversation, state: { ...conversation.state, products: state?.products?.filter((p: any) => p.id !== productId) } } : conversation))
     if (state?.buffer_products?.length > 0) {
       let a = state?.buffer_products.pop()
       setState({
@@ -406,6 +410,7 @@ export function ShoppingAssistant() {
       })
     }
   }
+  
 
   // useEffect(() => {
   //   setWishlist(state?.products?.filter((product: any) => state?.favorites?.includes(product.id)))
@@ -540,7 +545,7 @@ export function ShoppingAssistant() {
   })
 
   useEffect(() => {
-    console.log(state, "statestatestatestate")
+    
   }, [state])
 
   useCopilotAction({
